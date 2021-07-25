@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd">
+        
+         <!-- to activate annotations in beans already registered in the application context -->
+       <context:annotation-config />
+       
+       <context:component-scan base-package="com.lti" />
+       
+       <context:property-placeholder location="classpath:application.properties,classpath:jdbc.properties"/>
+       
+       <mvc:annotation-driven />
+       
+       
+       
+       
+ <bean id="ds1" class="org.springframework.jdbc.datasource.DriverManagerDataSource">  
+<property name="driverClassName" value="${datasource1.driver-class-name}" /> 
+<property name="url" value="${datasource1.url}" /> 
+<property name="username" value="root" />  
+<property name="password" value="root" />  
+</bean>  
+  
+<bean id="jtemplate1"   
+ class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">  
+<constructor-arg ref="ds1"></constructor-arg>  
+</bean> 
+    
+      
+ <bean id="transactionMangerFormydb" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <constructor-arg ref="ds1" />
+</bean>
+
+<bean id="myEmfFormyDB"
+			class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+			<property name="dataSource" ref="ds1" /> <!-- DataSource/DataBase we want to use -->
+			<property name="packagesToScan" value="com.lti.model" /> <!-- Location of @Entity classes -->
+			<property name="jpaVendorAdapter">
+				<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+			</property>
+			<property name="jpaProperties">
+				<props>
+				<!-- <prop key="hibernate.hbm2ddl.auto">validate</prop> -->
+					<prop key="hibernate.show_sql">true</prop>
+				</props>
+			</property>
+</bean>	
+	
+<!-- Transaction Bean with ENTITYMANAGER -->
+		<bean id="transactionManagerFormydbWithEntityManger" class="org.springframework.orm.jpa.JpaTransactionManager">
+			<property name="entityManagerFactory" ref="myEmfFormyDB" />
+		</bean>
+		
+		
+
+
+
+
+
+
+
+
+
+
+
+
+ <bean id="ds2" class="org.springframework.jdbc.datasource.DriverManagerDataSource">  
+<property name="driverClassName" value="${datasource2.driver-class-name}" /> 
+<property name="url" value="${datasource2.url}" /> 
+<property name="username" value="root" />  
+<property name="password" value="root" /> 
+
+</bean>  
+  
+<bean id="jtemplate2"   
+ class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">  
+<constructor-arg ref="ds2"></constructor-arg>  
+</bean> 
+    
+      
+ <bean id="transactionMangerFormyseconddb" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <constructor-arg ref="ds2" />
+</bean>
+
+
+
+<bean id="myEmfFormySecondDB"
+			class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+			<property name="dataSource" ref="ds2" /> <!-- DataSource/DataBase we want to use -->
+			<property name="packagesToScan" value="com.lti.model" /> <!-- Location of @Entity classes -->
+			<property name="jpaVendorAdapter">
+				<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+			</property>
+			<property name="jpaProperties">
+				<props>
+				<!-- <prop key="hibernate.hbm2ddl.auto">validate</prop> -->
+					<prop key="hibernate.show_sql">true</prop>
+				</props>
+			</property>
+</bean>	
+	
+<!-- Transaction Bean with ENTITYMANAGER -->
+		<bean id="transactionManagerFormySecondDBWithEntityManger" class="org.springframework.orm.jpa.JpaTransactionManager">
+			<property name="entityManagerFactory" ref="myEmfFormySecondDB" />
+		</bean>
+		
+
+
+
+
+
+
+
+
+
+
+  
+  <bean class=
+      "org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="prefix" value="${prefix}" />
+    <property name="suffix" value="${suffix}" />
+  </bean>
+  
+
+
+
+       
+ </beans>
