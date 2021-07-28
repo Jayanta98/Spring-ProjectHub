@@ -1,0 +1,252 @@
+package com.javachinna.config;
+ 
+import java.util.HashMap;
+ 
+import javax.sql.DataSource;
+ 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+ 
+import com.zaxxer.hikari.HikariDataSource;
+ 
+@Configuration
+@EnableJpaRepositories(basePackages = "com.javachinna.repo.product", entityManagerFactoryRef = "productEntityManager", transactionManagerRef = "productTransactionManager")
+public class ProductDataSourceConfiguration {
+ 
+    @Autowired
+    Environment env;
+ 
+    @Bean
+    @ConfigurationProperties(prefix = "app.datasource.product")
+    public DataSourceProperties productDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+ 
+    @Bean
+    public DataSource productDataSource() {
+        return productDataSourceProperties().initializeDataSourceBuilder().type(HikariDataSource.class).build();
+    }
+ 
+    @Bean
+    public LocalContainerEntityManagerFactoryBean productEntityManager() {
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(productDataSource());
+        em.setPackagesToScan("com.javachinna.model.product");
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        em.setJpaVendorAdapter(vendorAdapter);
+        HashMap<String, Object> properties = new HashMap<>();
+        properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+        properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        em.setJpaPropertyMap(properties);
+        return em;
+    }
+ 
+    @Bean
+    public PlatformTransactionManager productTransactionManager() {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(productEntityManager().getObject());
+        return transactionManager;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+***************************************
+
+
+package com.javachinna.config;
+ 
+import java.util.HashMap;
+ 
+import javax.sql.DataSource;
+ 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+ 
+import com.zaxxer.hikari.HikariDataSource;
+ 
+@Configuration
+@EnableJpaRepositories(basePackages = "com.javachinna.repo.prime", entityManagerFactoryRef = "primeEntityManager", transactionManagerRef = "primeTransactionManager")
+public class PrimeDataSourceConfiguration {
+ 
+    @Autowired
+    Environment env;
+ 
+    @Bean
+    @Primary
+    @ConfigurationProperties(prefix = "app.datasource.prime")
+    public DataSourceProperties primeDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+ 
+    @Bean
+    @Primary
+    public DataSource primeDataSource() {
+        return primeDataSourceProperties().initializeDataSourceBuilder().type(HikariDataSource.class).build();
+    }
+ 
+    @Bean
+    @Primary
+    public LocalContainerEntityManagerFactoryBean primeEntityManager() {
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(primeDataSource());
+        em.setPackagesToScan("com.javachinna.model.prime");
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        em.setJpaVendorAdapter(vendorAdapter);
+        HashMap<String, Object> properties = new HashMap<>();
+        properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+        properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        em.setJpaPropertyMap(properties);
+        return em;
+    }
+ 
+    @Bean
+    @Primary
+    public PlatformTransactionManager primeTransactionManager() {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(primeEntityManager().getObject());
+        return transactionManager;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+****************************************
+
+
+
+
+
+
+
+### Prime Database Details
+app.datasource.prime.url=jdbc:mysql://localhost:3306/prime?createDatabaseIfNotExist=true
+app.datasource.prime.username=root
+app.datasource.prime.password=secret
+app.datasource.prime.driver-class-name=com.mysql.cj.jdbc.Driver
+### Prime Database Connection Pool Details
+app.datasource.prime.hikari.idle-timeout=10000
+app.datasource.prime.hikari.maximum-pool-size=10
+app.datasource.prime.hikari.minimum-idle=5
+app.datasource.prime.hikari.pool-name=PrimeHikariPool
+ 
+### Product Database Details
+app.datasource.product.url=jdbc:mysql://localhost:3306/product?createDatabaseIfNotExist=true
+app.datasource.product.username=root
+app.datasource.product.password=secret
+app.datasource.product.driver-class-name=com.mysql.cj.jdbc.Driver
+### Product Database Connection Pool Details
+app.datasource.product.hikari.idle-timeout=10000
+app.datasource.product.hikari.maximum-pool-size=10
+app.datasource.product.hikari.minimum-idle=5
+app.datasource.product.hikari.pool-name=ProductHikariPool
+ 
+# Hibernate props
+hibernate.hbm2ddl.auto=create
+hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////
+    @Autowired
+    @Qualifier("productEntityManager")
+
+
+
+
+
+
+This is just a DAO class to demonstrate how the primary entity manager can be injected without specifying the name primeEntityManager using the @Qualifier annotation.
+    private EntityManager entityManager;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
